@@ -2,7 +2,7 @@
 
 An efficient, lightweight feedback tool for the educational sector that enables instructors to start interactive quiz sessions instantly without registration or complex infrastructure. 
 
-The application utilizes peer-to-peer technology for real-time data exchange and validates quiz content directly during upload from simple Markdown files to guarantee a smooth process. Participants join effortlessly via QR code or direct link.
+The application utilizes peer-to-peer technology for real-time data exchange and validates quiz content directly during upload from simple Markdown files to guarantee a smooth process. Participants join effortlessly via QR code or direct link. The application is fully localized and available in both English and German.
 
 [Live Demo](https://nicohartmann.dev/LiteQuiz_en.html)
 
@@ -45,11 +45,11 @@ git clone [https://github.com/kt-NicoHartmann/LiteQuiz.git](https://github.com/k
 
 Navigate into the project directory and open the index.html file in your preferred web browser.
 ```bash
-cd YOUR_REPOSITORY_NAME
+cd LiteQuiz
 # On macOS/Linux:
-open index.html
+open LiteQuiz_en.html
 # On Windows:
-start index.html
+start LiteQuiz_en.html
 ```
 
 Alternatively, you can use an extension like Live Server in VS Code to host it locally.
