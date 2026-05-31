@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>LiteQuiz</title>
+    <script src="/scripts/peerjs.min.js"></script>
+    <script src="/scripts/confetti.browser.min.js"></script>
+    <script src="/scripts/qrcode.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="hidden-badge" id="conn-status">● Connecting…</div>
+    <div id="app">
+        <div class="view-section text-center" id="view-start">
+            <h1 class="brand-title">Lite<span>Quiz</span></h1>
+            <div class="start-grid">
+                <div class="glass border-blue-500/20">
+                    <div class="role-title dozent">Lecturer</div>
+                    <input accept=".md" class="hidden" id="md-input" type="file" />
+                    <button class="btn-blue w-full btn-large btn-hover" onclick="document.getElementById('md-input').click()">Upload .md Quiz</button>
+                    <p class="error-box hidden" id="upload-error"></p>
+                </div>
+                <div class="glass">
+                    <div class="role-title teilnehmer">Participant</div>
+                    <input id="join-id" placeholder="ROOM CODE" type="text" />
+                    <input id="student-name" placeholder="NICKNAME" type="text" />
+                    <button class="btn-white w-full btn-large btn-hover" onclick="joinRoom()">Join</button>
+                    <p class="error-box hidden" id="join-error"></p>
+                </div>
+            </div>
+        </div>
+        <div class="view-section text-center hidden" id="view-lobby">
+            <div class="lobby-flex">
+                <div class="glass hidden" id="qr-container">
+                    <div id="qrcode"></div>
+                    <button class="copy-link" onclick="copyLink()">Copy Link 📋</button>
+                    <div class="hidden" id="share-url"></div>
+                </div>
+                <div>
+                    <div class="glass room-code-box">
+                        <span id="display-room-id">----</span>
+                    </div>
+                    <div id="lobby-status">Waiting to start...</div>
+                </div>
+            </div>
+            <div id="player-list"></div>
+            <div>
+                <button class="btn-emerald btn-round-large btn-hover hidden" id="start-btn" onclick="startQuiz()">Start Quiz</button>
+            </div>
+        </div>
+        <div class="view-section hidden" id="view-quiz">
+            <div>
+                <span class="count-text" id="student-q-count">Question 1/10</span>
+                <div class="timer-wrapper">
+                    <div class="timer-bar" id="timer"></div>
+                </div>
+            </div>
+            <div class="glass question-card text-center">
+                <h2 id="question-text">...</h2>
+            </div>
+            <div class="answer-grid" id="answer-grid"></div>
+            <button class="btn-blue w-full btn-large btn-hover" disabled="" id="confirm-answer-btn" onclick="confirmSelection()">Lock in Answer</button>
+        </div>
+        <!-- HOST MONITOR: shows question + answer options (read-only) + progress -->
+        <div class="view-section text-center hidden" id="view-host-monitor">
+            <div>
+                <span class="count-text" id="host-q-count">Question 1/10</span>
+                <div class="timer-wrapper">
+                    <div class="timer-bar" id="host-timer"></div>
+                </div>
+            </div>
+            <div class="glass question-card">
+                <h2 id="host-question-text" style="text-align:center; font-style:italic;"></h2>
+                <div class="host-answer-grid" id="host-answer-grid"></div>
+            </div>
+            <div class="glass progress-circle">
+                <div class="number" id="host-progress">0 / 0</div>
+                <div class="label">Answers</div>
+            </div>
+        </div>
+        <div class="view-section hidden" id="view-leaderboard">
+            <!-- Round result for participants (hidden on host) -->
+            <div class="hidden animate-slide-in" id="student-round-result"></div>
+            <div class="glass review-card">
+                <p class="count-text" style="margin-bottom: 0.5rem;">Review: Last Question</p>
+                <h3 id="review-q-text"></h3>
+                <div id="review-answers"></div>
+            </div>
+            <div class="text-center">
+                <h2 class="brand-title" style="font-size: 3rem; margin-bottom: 1.5rem;">Leaderboard</h2>
+                <div class="leaderboard-container" id="leaderboard-list"></div>
+            </div>
+            <div class="host-controls hidden" id="host-controls">
+                <button class="btn-blue btn-round-large btn-hover" id="next-q-btn" onclick="broadcastQuestion()">Next Question ➜</button>
+                <button class="btn-emerald btn-round-large btn-hover hidden" id="show-podium-btn" onclick="finalFinish()">Final Results 🏆</button>
+            </div>
+            <div class="student-wait-msg hidden" id="student-msg">Waiting for the lecturer...</div>
+        </div>
+        <div class="view-section text-center hidden" id="view-podium">
+            <h2 class="podium-title">Winner</h2>
+            <div class="podium-container" id="podium-container"></div>
+            <button class="exit-session-btn" onclick="location.reload()">End Session</button>
+        </div>
+        <div class="view-section text-center hidden" id="view-wait">
+            <div class="wait-icon">💎</div>
+            <h2 class="role-title" style="color: var(--text-muted);">Logged In</h2>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+    <!-- Privacy Notice (Peer-to-Peer & WebRTC) -->
+    <div id="privacy-block" style="max-width:900px;margin:48px auto 32px;padding:0 16px;font-family:system-ui,-apple-system,sans-serif;color:#475569;">
+        <button id="privacy-toggle" onclick="(function(){var d=document.getElementById('privacy-content');var b=document.getElementById('privacy-toggle');var open=d.style.display!=='none';d.style.display=open?'none':'block';b.textContent=open?'Show Privacy Notice ▾':'Hide Privacy Notice ▴';})()"
+        style="background:transparent;border:1px solid #cbd5e1;color:#475569;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;" type="button">Show Privacy Notice ▾</button>
+        <div id="privacy-content" style="display:none;margin-top:16px;padding:20px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;font-size:14px;line-height:1.6;">
+            <h3 style="margin:0 0 12px;font-size:16px;color:#0f172a;">Special Feature of "LiteQuiz" (Peer-to-Peer &amp; WebRTC)</h3>
+            <p>When you use the integrated LiteQuiz (whether as a lecturer or participant), a few technical particularities apply. The same rule applies here: I don't want your data, but the technology requires a few logistical tricks.</p>
+            <p><strong>Direct Connection (Peer-to-Peer):</strong> The quiz connects the participants' browsers directly with the lecturer's browser (via WebRTC). For the data (questions, answers, points) to be able to flow, the participating browsers must
+                exchange their public IP addresses with each other. You are therefore disclosing your IP address to the other participants at this moment.</p>
+            <p><strong>Connection Brokering (Signaling, STUN &amp; TURN):</strong> To allow the browsers to find each other on the big, wide internet, they use my server (nicohartmann.dev) as a digital matchmaker.</p>
+            <ul style="margin:8px 0 8px 20px;padding:0;">
+                <li><strong>Signaling:</strong> Your browser briefly contacts the server to find the room.</li>
+                <li><strong>STUN/TURN Fallback:</strong> Sometimes, strict routers (e.g., in a mobile network or university Wi-Fi) prevent a direct connection. In this case, the quiz's data stream runs encrypted through my server, which only forwards the
+                    packets (Relay).</li>
+            </ul>
+            <p><strong>What is saved?</strong> Nothing permanent. The chosen nicknames and the scores exist exclusively in the volatile memory of your browser and the host's browser. As soon as the quiz is finished or the tab is closed, it's all over. No
+                log files are written on the server for the brokering process.</p>
+        </div>
+    </div>
+</body>
+
+</html>
