@@ -38,7 +38,7 @@ To run this project locally, follow these simple steps:
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git)
+git clone [https://github.com/kt-NicoHartmann/LiteQuiz.git](https://github.com/kt-NicoHartmann/LiteQuiz.git)
 ```
 
 2. Open the Project
