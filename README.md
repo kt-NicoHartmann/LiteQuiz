@@ -45,7 +45,7 @@ git clone https://github.com/kt-NicoHartmann/LiteQuiz.git
 
 Navigate into the project directory and open the index.html file in your preferred web browser.
 ```bash
-cd LiteQuiz
+cd LiteQuiz/LiteQuiz_en
 # On macOS/Linux:
 open LiteQuiz_en.html
 # On Windows:
